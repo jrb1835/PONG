@@ -1,0 +1,112 @@
+boolean startgame = false;
+PFont font;
+int ballsize = 15;
+float speedX = 5;
+float speedY = 5; 
+float bally = 125; 
+float ballx = 375;
+float mouseYc;
+float padley;
+float AIrandom;
+float easing;
+int AIlives = 0; 
+int PLlives = 0;
+
+
+
+void setup(){
+  size(750, 250);
+  smooth();
+  frameRate(30); 
+  font = loadFont("DFWaWaSC-W5-100.vlw"); 
+  textFont(font);
+}
+
+void draw(){
+  background(255);
+  mouseYc = constrain(mouseY, 0, height - 15);
+  int Time = millis();
+  
+  fill(130, 255, 130);
+  textAlign(CENTER);
+  textSize(50);
+  text("PONG", width/2 , 100);
+  textSize(25);
+  text("" + AIlives, width/2 - 100 , 150);
+  text("" + PLlives, width/2 +100 , 150);
+  text(""+ Time/1000, width/2  , 150);
+  
+  if(startgame) {
+    textSize(25);
+    text(""+ Time/1000, width/2  , 150);
+  }else {
+  textSize(25);
+  text("CLICK TO START", width/2 , 200);
+  }
+ 
+  fill(130, 130, 255);
+  rect(width - 15, mouseYc, 15, 50); // Player Padle
+    
+  
+  if (startgame) { // start game
+   ballx = ballx + speedX;
+   bally = bally + speedY; 
+   
+   if (ballx > width - 21 && bally > mouseY - 25 && bally < mouseY + 25 ) { // off Player padle
+       speedX = random(5,10);
+       speedX = random(5,10);
+       speedX = speedX * -1;
+       AIrandom = random(1, 10); 
+   }
+   
+   
+   if (ballx < 22 && bally > padley - 25  && bally < padley + 25 ) { // off AI padle
+       speedX = speedX * -1;
+       speedX = random(5,10);
+       speedX = random(5,10);
+   }
+   
+    if (bally < 16 || bally > 249){ // bounce of top and bottom
+       speedY = speedY * -1;
+    }
+  
+  if ( AIrandom > 7){
+      easing = 0.6;
+    }else{ 
+      easing = 1;
+  }
+       if (ballx > 40 && speedX > 0 ) { // AI losing 
+         padley = height /2 ;
+       }else {
+        if (speedX < 0){ 
+            padley = bally * easing;
+        }
+      }
+      
+  fill(255, 130, 130);
+  rectMode(CENTER); 
+  rect(15, padley, 15, 50); // AI Padle
+  
+  fill(200);
+  ellipse(ballx, bally, ballsize, ballsize); // Ball
+    
+    if (ballx > width|| ballx < 0) { //restart if lose 
+      if( ballx > width){ 
+      AIlives  = AIlives + 1; 
+      }
+      if(ballx < 0){ 
+      PLlives = PLlives  + 1;
+      }
+     startgame = false; 
+     bally = 125; 
+     ballx = 375;
+     speedX = random(4,8);
+     speedY = random(4,8);
+    }
+    
+  }
+}
+
+void mousePressed() {
+  startgame = !startgame;
+}
